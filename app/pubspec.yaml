@@ -1,0 +1,62 @@
+name: formation_flutter
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.10.7 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+  # UI & Navigation
+  flutter_svg: ^2.0.9
+  sliver_tools: ^0.2.12
+  provider: ^6.1.1
+  go_router: ^14.0.0
+  
+  # Réseau & Backend
+  dio: ^5.4.0
+  pocketbase: ^0.23.2
+  shared_preferences: ^2.2.2
+
+  # Fonctionnalités spécifiques (Scanner & Partage)
+  mobile_scanner: ^5.1.0
+  share_plus: ^10.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Génération automatique (utile pour la localisation si activée)
+  generate: true
+
+  assets:
+    - res/drawables/
+    - res/svg/
+
+  fonts:
+    - family: AppIcons
+      fonts:
+        - asset: res/fonts/app_icons.ttf
+    - family: Avenir
+      fonts:
+        - asset: res/fonts/Avenir-Light.ttf
+          weight: 300
+        - asset: res/fonts/Avenir-Regular.ttf
+          weight: 400
+        - asset: res/fonts/Avenir-Medium.ttf
+          weight: 500
+        - asset: res/fonts/Avenir-Black.ttf
+          weight: 900
