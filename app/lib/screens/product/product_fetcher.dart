@@ -20,7 +20,7 @@ class ProductFetcher extends ChangeNotifier {
     try {
       final Product product = await OpenFoodFactsAPI().getProduct(_barcode);
 
-      _saveToPocketBase(product);
+      await _saveToPocketBase(product);
 
       _state = ProductFetcherSuccess(product);
     } catch (error) {
