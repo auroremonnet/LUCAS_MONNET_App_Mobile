@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formation_flutter/l10n/app_localizations.dart';
+import 'package:formation_flutter/model/product_recall.dart';
 import 'package:formation_flutter/res/app_colors.dart';
 import 'package:formation_flutter/res/app_theme_extension.dart';
 import 'package:formation_flutter/screens/favorites/favorites_page.dart';
@@ -7,6 +8,7 @@ import 'package:formation_flutter/screens/homepage/homepage_screen.dart';
 import 'package:formation_flutter/screens/login/login_screen.dart';
 import 'package:formation_flutter/screens/login/register_screen.dart';
 import 'package:formation_flutter/screens/product/product_page.dart';
+import 'package:formation_flutter/screens/recalls/product_recall_page.dart';
 import 'package:formation_flutter/screens/scanner/scanner_screen.dart';
 import 'package:formation_flutter/services/pocketbase_service.dart';
 import 'package:go_router/go_router.dart';
@@ -48,6 +50,11 @@ class MyApp extends StatelessWidget {
         path: '/product',
         builder: (_, GoRouterState state) =>
             ProductPage(barcode: state.extra as String),
+      ),
+      GoRoute(
+        path: '/product-recall',
+        builder: (_, GoRouterState state) =>
+            ProductRecallPage(recall: state.extra as ProductRecall),
       ),
     ],
   );

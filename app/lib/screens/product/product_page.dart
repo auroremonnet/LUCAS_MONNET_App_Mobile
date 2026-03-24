@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:formation_flutter/model/product.dart';
+import 'package:formation_flutter/model/product_recall.dart';
 import 'package:formation_flutter/res/app_colors.dart';
 import 'package:formation_flutter/screens/product/product_fetcher.dart';
+import 'package:formation_flutter/screens/product/recall_fetcher.dart';
 import 'package:formation_flutter/screens/product/states/empty/product_page_empty.dart';
 import 'package:formation_flutter/screens/product/states/error/product_page_error.dart';
 import 'package:formation_flutter/screens/product/tabs/caracteristiques_tab.dart';
 import 'package:formation_flutter/screens/product/tabs/fiche_tab.dart';
 import 'package:formation_flutter/screens/product/tabs/nutrition_tab.dart';
 import 'package:formation_flutter/screens/product/tabs/tableau_tab.dart';
+import 'package:formation_flutter/screens/product/widgets/product_recall_banner.dart';
 import 'package:formation_flutter/services/favorites_service.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ProductPage extends StatefulWidget {
-  const ProductPage({super.key, required this.barcode})
-      : assert(barcode.length > 0);
+  const ProductPage({
+    super.key,
+    required this.barcode,
+  }) : assert(barcode.length > 0);
 
   final String barcode;
 
@@ -37,12 +43,14 @@ class _ProductPageState extends State<ProductPage> {
     try {
       final favorite = await FavoritesService.isFavorite(widget.barcode);
       if (!mounted) return;
+
       setState(() {
         _isFavorite = favorite;
         _favoriteLoading = false;
       });
     } catch (_) {
       if (!mounted) return;
+
       setState(() {
         _isFavorite = false;
         _favoriteLoading = false;
@@ -67,6 +75,7 @@ class _ProductPageState extends State<ProductPage> {
       }
 
       if (!mounted) return;
+
       setState(() {
         _isFavorite = !wasFavorite;
       });
@@ -82,6 +91,7 @@ class _ProductPageState extends State<ProductPage> {
       );
     } catch (e) {
       if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Erreur favoris : $e'),
@@ -90,6 +100,7 @@ class _ProductPageState extends State<ProductPage> {
       );
     } finally {
       if (!mounted) return;
+
       setState(() {
         _favoriteActionLoading = false;
       });
@@ -98,8 +109,15 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<ProductFetcher>(
-      create: (_) => ProductFetcher(barcode: widget.barcode),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ProductFetcher>(
+          create: (_) => ProductFetcher(barcode: widget.barcode),
+        ),
+        ChangeNotifierProvider<RecallFetcher>(
+          create: (_) => RecallFetcher(barcode: widget.barcode),
+        ),
+      ],
       child: Scaffold(
         backgroundColor: Colors.white,
         bottomNavigationBar: BottomNavigationBar(
@@ -131,8 +149,10 @@ class _ProductPageState extends State<ProductPage> {
           builder: (BuildContext context, ProductFetcher notifier, _) {
             return switch (notifier.state) {
               ProductFetcherLoading() => const ProductPageEmpty(),
-              ProductFetcherError(error: var err) => ProductPageError(error: err),
-              ProductFetcherSuccess(product: var prod) => _buildProductView(prod, context),
+              ProductFetcherError(error: var err) =>
+                ProductPageError(error: err),
+              ProductFetcherSuccess(product: var prod) =>
+                _buildProductView(prod, context),
             };
           },
         ),
@@ -154,7 +174,9 @@ class _ProductPageState extends State<ProductPage> {
           child: Image.network(
             product.picture ?? '',
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(color: AppColors.grey2),
+            errorBuilder: (_, __, ___) => Container(
+              color: AppColors.grey2,
+            ),
           ),
         ),
         Positioned.fill(
@@ -238,6 +260,28 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Widget _buildTabContent(Product product) {
+    if (_currentIndex == 0) {
+      return Column(
+        children: [
+          Consumer<RecallFetcher>(
+            builder: (context, notifier, _) {
+              return switch (notifier.state) {
+                RecallFetcherLoading() => const SizedBox.shrink(),
+                RecallFetcherNotFound() => const SizedBox.shrink(),
+                RecallFetcherFound(recall: final ProductRecall recall) =>
+                  ProductRecallBanner(
+                    onTap: () {
+                      context.push('/product-recall', extra: recall);
+                    },
+                  ),
+              };
+            },
+          ),
+          FicheTab(product: product),
+        ],
+      );
+    }
+
     return [
       FicheTab(product: product),
       CaracteristiquesTab(product: product),

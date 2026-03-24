@@ -107,12 +107,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _onScanButtonPressed(BuildContext context) async {
-    await context.push('/scanner');
+    await context.push('/product', extra: '8445290000842');
     if (mounted) {
       _reload();
     }
   }
+  /*Future<void> _onScanButtonPressed(BuildContext context) async {
+  await context.push('/product', extra: '8445290000842');
+  if (mounted) {
+    _reload();
+  }
+  /scanner
+  */
 }
+
 
 class _HistoryCard extends StatelessWidget {
   const _HistoryCard({required this.record});
